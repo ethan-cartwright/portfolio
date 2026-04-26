@@ -5,11 +5,20 @@ export type ProjectMeta = {
   title: string;
   blurb?: string;
   year?: string;
-  role?: string;
   cover?: string;
   featured?: boolean;
   /** Smaller = earlier in the list. Defaults to 100. */
   order?: number;
+  /** Credits shown beneath the title, joined with " | ". */
+  roles?: string[];
+  /** Free-form runtime, e.g. "6 min". */
+  watchTime?: string;
+  client?: string;
+  industry?: string;
+  /** YouTube URL or 11-char video ID for the primary embed. */
+  youtube?: string;
+  /** One line per award, e.g. "[Official Selection] Some Festival". */
+  awards?: string[];
 };
 
 export type Project = ProjectMeta & { slug: string };
