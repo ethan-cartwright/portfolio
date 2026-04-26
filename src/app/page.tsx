@@ -9,8 +9,7 @@ export default async function Home() {
     <div className="mx-auto max-w-6xl px-6 md:px-10">
       <section className="min-h-[70vh] flex flex-col justify-center py-24">
         <h1 className="max-w-4xl text-4xl md:text-6xl lg:text-7xl font-medium leading-[1.05] tracking-tight">
-          I&apos;m Ethan. I turn moments and ideas into screen stories that
-          stay.
+          I&apos;m Ethan. I turn moments and ideas into screen stories.
         </h1>
         <div className="mt-10">
           <Link

@@ -12,7 +12,7 @@ const inter = Inter({
 export const metadata: Metadata = {
   title: "Ethan Cartwright — Video & Film",
   description:
-    "I'm Ethan. I turn moments and ideas into screen stories that stay.",
+    "I'm Ethan. I turn moments and ideas into screen stories.",
 };
 
 export default function RootLayout({
