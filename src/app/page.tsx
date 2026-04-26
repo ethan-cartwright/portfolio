@@ -1,9 +1,9 @@
 import Link from "next/link";
 import { ProjectCard } from "@/components/ProjectCard";
-import { featuredProjects } from "@/lib/projects";
+import { getFeaturedProjects } from "@/lib/projects";
 
-export default function Home() {
-  const featured = featuredProjects();
+export default async function Home() {
+  const featured = await getFeaturedProjects();
 
   return (
     <div className="mx-auto max-w-6xl px-6 md:px-10">

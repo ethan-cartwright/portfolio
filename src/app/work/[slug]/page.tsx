@@ -1,15 +1,29 @@
 import Link from "next/link";
 import { notFound } from "next/navigation";
-import { getProject, projects } from "@/lib/projects";
+import { getAllSlugs, getProject } from "@/lib/projects";
+
+export const dynamicParams = false;
 
 export function generateStaticParams() {
-  return projects.map((p) => ({ slug: p.slug }));
+  return getAllSlugs().map((slug) => ({ slug }));
+}
+
+export async function generateMetadata(props: PageProps<"/work/[slug]">) {
+  const { slug } = await props.params;
+  const project = await getProject(slug);
+  if (!project) return {};
+  return {
+    title: `${project.title} — Ethan Cartwright`,
+    description: project.blurb,
+  };
 }
 
 export default async function ProjectPage(props: PageProps<"/work/[slug]">) {
   const { slug } = await props.params;
-  const project = getProject(slug);
+  const project = await getProject(slug);
   if (!project) notFound();
+
+  const { default: Content } = await import(`@/content/projects/${slug}.mdx`);
 
   return (
     <div className="mx-auto max-w-3xl px-6 md:px-10 py-20">
@@ -27,12 +41,9 @@ export default async function ProjectPage(props: PageProps<"/work/[slug]">) {
           <p className="text-muted mt-3 text-sm">{project.year}</p>
         )}
       </header>
-      {project.blurb && (
-        <p className="text-lg leading-relaxed">{project.blurb}</p>
-      )}
-      <div className="mt-12 aspect-video rounded-lg border border-border bg-[#222] flex items-center justify-center text-muted text-sm">
-        Video / stills coming soon
-      </div>
+      <article className="prose prose-invert max-w-none prose-headings:font-medium prose-headings:tracking-tight prose-a:text-foreground prose-a:underline-offset-4 prose-img:rounded-lg">
+        <Content />
+      </article>
     </div>
   );
 }

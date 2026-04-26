@@ -1,54 +1,65 @@
-export type Project = {
-  slug: string;
+import fs from "node:fs";
+import path from "node:path";
+
+export type ProjectMeta = {
   title: string;
   blurb?: string;
   year?: string;
   role?: string;
   cover?: string;
   featured?: boolean;
+  /** Smaller = earlier in the list. Defaults to 100. */
+  order?: number;
 };
 
-export const projects: Project[] = [
-  {
-    slug: "carousel",
-    title: "Carousel",
-    blurb: "Short film exploring memory and motion.",
-    year: "2025",
-    featured: true,
-  },
-  {
-    slug: "walk-with-me",
-    title: "Walk with Me",
-    blurb: "A walking-and-talking documentary series.",
-    year: "2025",
-    featured: true,
-  },
-  {
-    slug: "sarah-buss-desert-sessions",
-    title: "Sarah Buss — Desert Sessions",
-    blurb: "Live music film captured in the high desert.",
-    year: "2024",
-    featured: true,
-  },
-  {
-    slug: "roommate-bonding",
-    title: "Roommate Bonding",
-    blurb: "A comedic vignette of cohabitation rituals.",
-    year: "2024",
-    featured: true,
-  },
-  {
-    slug: "romance-on-steroids",
-    title: "Romance On Steroids",
-    blurb: "An over-the-top take on the modern love story.",
-    year: "2023",
-  },
-];
+export type Project = ProjectMeta & { slug: string };
 
-export function getProject(slug: string): Project | undefined {
-  return projects.find((p) => p.slug === slug);
+const CONTENT_DIR = path.join(process.cwd(), "src", "content", "projects");
+
+function listSlugs(): string[] {
+  return fs
+    .readdirSync(CONTENT_DIR)
+    .filter((f) => f.endsWith(".mdx"))
+    .map((f) => f.replace(/\.mdx$/, ""));
 }
 
-export function featuredProjects(): Project[] {
-  return projects.filter((p) => p.featured);
+async function loadMeta(slug: string): Promise<ProjectMeta> {
+  const mod = await import(`@/content/projects/${slug}.mdx`);
+  if (!mod.metadata) {
+    throw new Error(`Project "${slug}" is missing an exported \`metadata\`.`);
+  }
+  return mod.metadata as ProjectMeta;
+}
+
+function compareProjects(a: Project, b: Project): number {
+  const ao = a.order ?? 100;
+  const bo = b.order ?? 100;
+  if (ao !== bo) return ao - bo;
+  // Newer years first
+  const ay = parseInt(a.year ?? "0", 10);
+  const by = parseInt(b.year ?? "0", 10);
+  if (ay !== by) return by - ay;
+  return a.title.localeCompare(b.title);
+}
+
+export async function getAllProjects(): Promise<Project[]> {
+  const slugs = listSlugs();
+  const projects = await Promise.all(
+    slugs.map(async (slug) => ({ slug, ...(await loadMeta(slug)) })),
+  );
+  return projects.sort(compareProjects);
+}
+
+export async function getFeaturedProjects(): Promise<Project[]> {
+  const all = await getAllProjects();
+  return all.filter((p) => p.featured);
+}
+
+export async function getProject(slug: string): Promise<Project | null> {
+  if (!listSlugs().includes(slug)) return null;
+  return { slug, ...(await loadMeta(slug)) };
+}
+
+export function getAllSlugs(): string[] {
+  return listSlugs();
 }

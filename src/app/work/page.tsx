@@ -1,11 +1,13 @@
 import { ProjectCard } from "@/components/ProjectCard";
-import { projects } from "@/lib/projects";
+import { getAllProjects } from "@/lib/projects";
 
 export const metadata = {
   title: "Work — Ethan Cartwright",
 };
 
-export default function WorkPage() {
+export default async function WorkPage() {
+  const projects = await getAllProjects();
+
   return (
     <div className="mx-auto max-w-6xl px-6 md:px-10 py-20">
       <header className="mb-14">
