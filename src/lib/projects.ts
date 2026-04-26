@@ -1,5 +1,6 @@
 import fs from "node:fs";
 import path from "node:path";
+import { youtubeThumbnail } from "@/lib/youtube";
 
 export type ProjectMeta = {
   title: string;
@@ -38,6 +39,24 @@ async function loadMeta(slug: string): Promise<ProjectMeta> {
   return mod.metadata as ProjectMeta;
 }
 
+/** Find the first <YouTube id="..."> in the MDX source, regardless of formatting. */
+function firstYouTubeIdInMdx(slug: string): string | null {
+  const filePath = path.join(CONTENT_DIR, `${slug}.mdx`);
+  const src = fs.readFileSync(filePath, "utf8");
+  const match = src.match(/<YouTube\b[^>]*\bid=["']([^"']+)["']/);
+  return match ? match[1] : null;
+}
+
+async function loadProject(slug: string): Promise<Project> {
+  const meta = await loadMeta(slug);
+  let cover = meta.cover;
+  if (!cover) {
+    const ytId = firstYouTubeIdInMdx(slug);
+    if (ytId) cover = youtubeThumbnail(ytId) ?? undefined;
+  }
+  return { slug, ...meta, cover };
+}
+
 function compareProjects(a: Project, b: Project): number {
   const ao = a.order ?? 100;
   const bo = b.order ?? 100;
@@ -51,9 +70,7 @@ function compareProjects(a: Project, b: Project): number {
 
 export async function getAllProjects(): Promise<Project[]> {
   const slugs = listSlugs();
-  const projects = await Promise.all(
-    slugs.map(async (slug) => ({ slug, ...(await loadMeta(slug)) })),
-  );
+  const projects = await Promise.all(slugs.map(loadProject));
   return projects.sort(compareProjects);
 }
 
@@ -64,7 +81,7 @@ export async function getFeaturedProjects(): Promise<Project[]> {
 
 export async function getProject(slug: string): Promise<Project | null> {
   if (!listSlugs().includes(slug)) return null;
-  return { slug, ...(await loadMeta(slug)) };
+  return loadProject(slug);
 }
 
 export async function getNextProject(slug: string): Promise<Project | null> {

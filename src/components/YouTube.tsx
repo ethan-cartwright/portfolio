@@ -1,3 +1,5 @@
+import { extractYouTubeId } from "@/lib/youtube";
+
 type YouTubeProps = {
   /** Either a video ID (e.g. "dQw4w9WgXcQ") or any YouTube URL. */
   id: string;
@@ -6,30 +8,8 @@ type YouTubeProps = {
   start?: number;
 };
 
-function extractId(input: string): string {
-  // Already an ID (11 chars, no slashes/dots)
-  if (/^[a-zA-Z0-9_-]{11}$/.test(input)) return input;
-
-  try {
-    const url = new URL(input);
-    if (url.hostname === "youtu.be") {
-      return url.pathname.slice(1);
-    }
-    if (url.hostname.endsWith("youtube.com")) {
-      const v = url.searchParams.get("v");
-      if (v) return v;
-      // /embed/<id> or /shorts/<id>
-      const parts = url.pathname.split("/").filter(Boolean);
-      if (parts[0] === "embed" || parts[0] === "shorts") return parts[1];
-    }
-  } catch {
-    // fall through
-  }
-  return input;
-}
-
 export function YouTube({ id, title, start }: YouTubeProps) {
-  const videoId = extractId(id);
+  const videoId = extractYouTubeId(id) ?? id;
   const params = new URLSearchParams();
   if (start) params.set("start", String(start));
   const query = params.toString() ? `?${params.toString()}` : "";

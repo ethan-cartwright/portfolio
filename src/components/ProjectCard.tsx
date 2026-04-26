@@ -7,9 +7,17 @@ export function ProjectCard({ project }: { project: Project }) {
       href={`/work/${project.slug}`}
       className="group block border border-border rounded-lg overflow-hidden hover:border-foreground/40 transition-colors"
     >
-      <div className="aspect-[4/3] bg-[#222] flex items-center justify-center text-muted text-sm">
-        {/* Placeholder — swap in cover image later */}
-        <span className="opacity-40">{project.title}</span>
+      <div className="aspect-video bg-[#222] flex items-center justify-center text-muted text-sm overflow-hidden">
+        {project.cover ? (
+          // eslint-disable-next-line @next/next/no-img-element
+          <img
+            src={project.cover}
+            alt={project.title}
+            className="w-full h-full object-cover"
+          />
+        ) : (
+          <span className="opacity-40">{project.title}</span>
+        )}
       </div>
       <div className="px-5 py-4 flex items-baseline justify-between gap-4">
         <div className="min-w-0">
