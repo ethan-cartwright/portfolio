@@ -1,8 +1,8 @@
 import Link from "next/link";
 import { notFound } from "next/navigation";
-import { getAllSlugs, getProject } from "@/lib/projects";
-import { YouTube } from "@/components/YouTube";
+import { getAllSlugs, getNextProject, getProject } from "@/lib/projects";
 import { ClockIcon, UserIcon, BuildingIcon } from "@/components/MetaIcon";
+import { NextProject } from "@/components/NextProject";
 
 export const dynamicParams = false;
 
@@ -44,6 +44,7 @@ export default async function ProjectPage(props: PageProps<"/work/[slug]">) {
   if (!project) notFound();
 
   const { default: Content } = await import(`@/content/projects/${slug}.mdx`);
+  const next = await getNextProject(slug);
 
   return (
     <div className="mx-auto max-w-3xl px-6 md:px-10 pt-12 pb-24">
@@ -57,18 +58,18 @@ export default async function ProjectPage(props: PageProps<"/work/[slug]">) {
       </div>
 
       <header className="text-center">
-        <h1 className="text-6xl md:text-7xl lg:text-8xl font-medium tracking-tight leading-[0.95]">
+        <h1 className="text-5xl md:text-6xl lg:text-7xl font-medium tracking-tight leading-[1.0]">
           {project.title}
         </h1>
 
         {project.roles && project.roles.length > 0 && (
-          <p className="mt-10 text-base text-foreground/90">
+          <p className="mt-8 text-sm md:text-base text-foreground/90">
             {project.roles.join(" | ")}
           </p>
         )}
 
         {(project.watchTime || project.client || project.industry) && (
-          <div className="mt-8 space-y-3">
+          <div className="mt-6 space-y-2">
             {project.watchTime && (
               <MetaRow
                 icon={<ClockIcon />}
@@ -94,23 +95,21 @@ export default async function ProjectPage(props: PageProps<"/work/[slug]">) {
         )}
       </header>
 
-      {project.youtube && (
-        <div className="mt-16">
-          <YouTube id={project.youtube} title={project.title} />
-        </div>
-      )}
+      <article className="prose prose-invert mx-auto mt-10 max-w-2xl text-center prose-p:text-foreground/80 prose-headings:font-medium prose-headings:tracking-tight prose-a:text-foreground prose-a:underline-offset-4 prose-img:rounded-lg">
+        <Content />
+      </article>
 
       {project.awards && project.awards.length > 0 && (
         <ul className="mt-12 space-y-3 text-center text-foreground/90">
           {project.awards.map((award) => (
-            <li key={award}>{award}</li>
+            <li key={award} className="text-sm">
+              {award}
+            </li>
           ))}
         </ul>
       )}
 
-      <article className="prose prose-invert mx-auto mt-16 max-w-none prose-headings:font-medium prose-headings:tracking-tight prose-a:text-foreground prose-a:underline-offset-4 prose-img:rounded-lg">
-        <Content />
-      </article>
+      {next && <NextProject project={next} />}
     </div>
   );
 }

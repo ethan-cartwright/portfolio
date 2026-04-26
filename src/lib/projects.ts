@@ -15,8 +15,6 @@ export type ProjectMeta = {
   watchTime?: string;
   client?: string;
   industry?: string;
-  /** YouTube URL or 11-char video ID for the primary embed. */
-  youtube?: string;
   /** One line per award, e.g. "[Official Selection] Some Festival". */
   awards?: string[];
 };
@@ -67,6 +65,13 @@ export async function getFeaturedProjects(): Promise<Project[]> {
 export async function getProject(slug: string): Promise<Project | null> {
   if (!listSlugs().includes(slug)) return null;
   return { slug, ...(await loadMeta(slug)) };
+}
+
+export async function getNextProject(slug: string): Promise<Project | null> {
+  const all = await getAllProjects();
+  const idx = all.findIndex((p) => p.slug === slug);
+  if (idx === -1 || all.length === 0) return null;
+  return all[(idx + 1) % all.length];
 }
 
 export function getAllSlugs(): string[] {
