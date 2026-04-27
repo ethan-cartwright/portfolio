@@ -15,8 +15,8 @@ export default async function WorkPage() {
           My Work
         </h1>
         <p className="text-muted mt-4 max-w-xl">
-          Selected screen stories — short films, music sessions, and
-          documentary work.
+          Selected screen stories — short films, music sessions, and spec
+          work.
         </p>
       </header>
       <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
