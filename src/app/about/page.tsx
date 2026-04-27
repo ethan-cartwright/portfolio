@@ -5,8 +5,8 @@ export const metadata = {
 type LinkItem = { label: string; href: string };
 
 const links: LinkItem[] = [
-  { label: "Instagram", href: "https://instagram.com/" },
-  { label: "Linkedin", href: "https://linkedin.com/in/" },
+  { label: "Instagram", href: "https://www.instagram.com/cartwright.ethan/" },
+  { label: "Linkedin", href: "https://www.linkedin.com/in/ethan-cartwright-m" },
   { label: "Resumé", href: "/uploaded_static_assets/Resume_Q1_2026.pdf" },
 ];
 
@@ -32,8 +32,8 @@ function ColumnList({
           <li key={item.label}>
             <a
               href={item.href}
-              target={item.href.startsWith("http") ? "_blank" : undefined}
-              rel={item.href.startsWith("http") ? "noopener noreferrer" : undefined}
+              target="_blank"
+              rel="noopener noreferrer"
               className="hover:opacity-70 transition-opacity"
             >
               {item.label}
@@ -49,11 +49,10 @@ export default function AboutPage() {
   return (
     <div className="mx-auto max-w-4xl px-6 md:px-10 py-24">
       <h1 className="text-5xl md:text-6xl font-medium tracking-tight leading-[1.1]">
-        Hi, I&apos;m Ethan. I tell stories — and help others tell theirs.
+        Storyteller, technologist, conversationalist.
       </h1>
       <p className="mt-12 max-w-2xl text-lg md:text-xl leading-relaxed text-foreground/85">
-        Page, camera, or AI-generation, I&apos;ll use whatever serves the
-        story best. I&apos;m currently working at the overlap of AI and video.
+        I&apos;m currently working at the overlap of AI and video.
       </p>
 
       <hr className="mt-16 border-border" />
